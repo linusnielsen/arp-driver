@@ -1,17 +1,20 @@
 MY_CFLAGS += -g -DDEBUG
 ccflags-y += ${MY_CFLAGS}
 CC += ${MY_CFLAGS}
+SRC := $(shell pwd)
 
 ifneq ($(KERNELRELEASE),)
 include Kbuild
 else
-KSRC ?= /lib/modules/$(shell uname -r)/build/
+KERNEL_SRC ?= /lib/modules/$(shell uname -r)/build/
 
 default:
-	make -C $(KSRC) M=$$PWD
+	$(MAKE) -C $(KERNEL_SRC) M=$(SRC)
 debug:
-	make -C $(KSRC) M=$$PWD EXTRA_CFLAGS="$(MY_CFLAGS)" modules
+	$(MAKE) -C $(KERNEL_SRC) M=$(SRC) EXTRA_CFLAGS="$(MY_CFLAGS)" modules
 clean:
-	make -C $(KSRC) M=$$PWD clean
+	$(MAKE) -C $(KERNEL_SRC) M=$(SRC) clean
+modules_install:
+	$(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules_install
 
 endif
